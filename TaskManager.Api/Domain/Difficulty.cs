@@ -1,4 +1,4 @@
-namespace TaskManager.Domain
+namespace TaskManager.Api.Domain
 {
     public enum Difficulty
     {
