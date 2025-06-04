@@ -5,6 +5,7 @@ namespace TaskManager.Domain
     public abstract class BaseEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("id")]
         public int Id { get; set; }
         [Column("created_at")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

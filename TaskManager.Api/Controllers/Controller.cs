@@ -12,9 +12,9 @@ namespace TaskManager.Api.Controllers
         {
             _mediator = mediator;
         }
-        protected void Dispatch(IRequest request)
+        protected Task<T> Dispatch<T>(IRequest<T> request)
         {
-            _mediator.Send(request);
+            return _mediator.Send(request);
         }
     }
 }

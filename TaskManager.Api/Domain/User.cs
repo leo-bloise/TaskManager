@@ -8,6 +8,7 @@ namespace TaskManager.Domain
         Index(nameof(Email), IsUnique = true),
         Index(nameof(Password), IsUnique = true)
     ]
+    [Table("users")]
     public class User : BaseEntity
     {
         [Column("username")]
@@ -18,15 +19,15 @@ namespace TaskManager.Domain
         public string Password { get; set; }
         [Column("email")]
         [NotNull]
-        public string Email { get; set; }     
-        public User() {}
+        public string Email { get; set; }
+        public User() { }
         public User(string username, string password, string email)
         {
             Username = username;
             Password = password;
             Email = email;
-            CreatedAt = DateTime.Now;
-            UpdatedAt = DateTime.Now;
+            CreatedAt = DateTime.Now.ToUniversalTime();
+            UpdatedAt = DateTime.Now.ToUniversalTime();
         }
     }
 }

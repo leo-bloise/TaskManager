@@ -12,7 +12,7 @@ namespace TaskManager.Api.Infra
         public ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
             _logger.LogDebug($"Exception received of type {exception.GetType().Name}");
-            return new ValueTask<bool>(false);
+            return new ValueTask<bool>(true);
         }
     }
 }

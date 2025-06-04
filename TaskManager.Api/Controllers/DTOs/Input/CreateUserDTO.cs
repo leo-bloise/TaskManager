@@ -5,11 +5,11 @@ namespace TaskManager.Api.Controllers.DTOs.Input
     public record CreateUserDTO(
         [Required]
         [StringLength(20)]
-        string username,
+        string Username,
         [Required]
-        string password,
+        string Password,
         [Required]
         [EmailAddress]
-        string email
+        string Email
     ) {}
 }
