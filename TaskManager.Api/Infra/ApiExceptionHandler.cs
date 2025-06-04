@@ -4,7 +4,7 @@ namespace TaskManager.Api.Infra
 {
     public class ApiExceptionHandler : IExceptionHandler
     {
-        private ILogger<ApiExceptionHandler> _logger;
+        private readonly ILogger<ApiExceptionHandler> _logger;
         public ApiExceptionHandler(ILogger<ApiExceptionHandler> logger)
         {
             _logger = logger;
@@ -12,7 +12,7 @@ namespace TaskManager.Api.Infra
         public ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
             _logger.LogDebug($"Exception received of type {exception.GetType().Name}");
-            return new ValueTask<bool>(true);
+            return ValueTask.FromResult<bool>(true);
         }
     }
 }

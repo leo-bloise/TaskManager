@@ -27,6 +27,7 @@ namespace TaskManager.Api
             });
             WebApplication app = builder.Build();
             app.MapControllers();
+            app.UseExceptionHandler((exceptionHandlerApp) => {});
             app.Run();
         }
     }
