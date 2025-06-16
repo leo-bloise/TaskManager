@@ -30,7 +30,7 @@ public class UserService : IUserService
             Email = createUserRequest.Email,
             Username = createUserRequest.Username
         };
-        user.Password = _passwordHasher.HashPassword(user, user.Password);
+        user.Password = _passwordHasher.HashPassword(user, createUserRequest.Password);
         return _userRepository.Create(user);
     }
 }

@@ -8,6 +8,6 @@ public class ApiResponse
     public ApiResponse(string message)
     {
         Message = message;
-        Timestamp = DateTime.UtcNow.ToString();
+        Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
     }
 }
