@@ -16,17 +16,18 @@ public class UserRepository : IUserRepository
         _taskManagerDbContext.SaveChanges();
         return user;
     }
-
     public bool ExistsByEmail(string email)
     {
         return _taskManagerDbContext.Users.Any(u => u.Email == email);
     }
-
     public bool ExistsByUsername(string username)
     {
         return _taskManagerDbContext.Users.Any(u => u.Username == username);
     }
-
+    public User? FindById(int id)
+    {
+        return _taskManagerDbContext.Users.FirstOrDefault(user => user.Id == id);
+    }
     public User? FindByUsername(string username)
     {
         return _taskManagerDbContext.Users.FirstOrDefault(u => u.Username == username);

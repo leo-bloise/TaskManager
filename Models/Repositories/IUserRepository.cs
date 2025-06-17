@@ -8,4 +8,5 @@ public interface IUserRepository
     public bool ExistsByEmail(string email);
     public User? FindByUsername(string username);
     public User Create(User user);
+    public User? FindById(int id);
 }
