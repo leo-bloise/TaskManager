@@ -24,7 +24,7 @@ public class UserRepository : IUserRepository
     {
         return _taskManagerDbContext.Users.Any(u => u.Username == username);
     }
-    public User? FindById(int id)
+    public User? FindById(long id)
     {
         return _taskManagerDbContext.Users.FirstOrDefault(user => user.Id == id);
     }

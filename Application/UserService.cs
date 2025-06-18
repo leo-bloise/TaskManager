@@ -33,7 +33,7 @@ public class UserService : IUserService
         user.Password = _passwordHasher.HashPassword(user, createUserRequest.Password);
         return _userRepository.Create(user);
     }
-    public User? GetById(int id)
+    public User? GetById(long id)
     {
         return _userRepository.FindById(id);
     }

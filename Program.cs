@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application;
 using TaskManager.Infra;
 using TaskManager.Infra.Authentication;
@@ -10,10 +11,19 @@ public class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
         builder.ConfigureDatabase();
-        builder.Services.AddControllers();
+        builder.Services.AddControllers(options =>
+        {
+            options.Filters.Add<ModelStateInvalidFilter>();
+        });
+        builder.Services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.SuppressModelStateInvalidFilter = true;
+        });
         builder.ConfigureJwt();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<ICategoryService, CategoryService>();
+        builder.Services.AddScoped<ITaskService, TaskService>();
         WebApplication app = builder.Build();
         app.MapControllers();
         app.ConfigureExceptionHandler();

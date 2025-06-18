@@ -15,6 +15,8 @@ public static class DatabaseSetup {
             );
         });
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+        builder.Services.AddScoped<ITaskRepository, TaskRepository>();
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
     }
 }

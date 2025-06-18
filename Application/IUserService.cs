@@ -6,5 +6,5 @@ namespace TaskManager.Application;
 public interface IUserService
 {
     public User Create(CreateUserRequest createUserRequest);
-    public User? GetById(int id);
+    public User? GetById(long id);
 }
