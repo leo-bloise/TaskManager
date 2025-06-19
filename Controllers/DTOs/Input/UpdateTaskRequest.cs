@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TaskManager.Controllers.DTOs;
+namespace TaskManager.Controllers.DTOs.Input;
 
-public record CreateTaskRequest(
+public record UpdateTaskRequest(
     [Required]
     [MaxLength(255)]
     string Name,

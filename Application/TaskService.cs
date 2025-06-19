@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TaskManager.Application.Exceptions;
 using TaskManager.Controllers.DTOs;
+using TaskManager.Controllers.DTOs.Input;
 using TaskManager.Models.Entities;
 using TaskManager.Models.Repositories;
 
@@ -49,5 +51,33 @@ public class TaskService : ITaskService
     {
         TaskPage taskPage = new TaskPage(new List<Models.Entities.Task>(), page, size, 0, 0);
         return _taskRepository.GetPage(taskPage);
+    }
+    private void UpdateCateogry(UpdateTaskRequest updateTaskRequest, Models.Entities.Task task)
+    {
+        if (!updateTaskRequest.CategoryId.HasValue)
+        {
+            task.Category = null;
+            return;
+        }
+        var categoryId = updateTaskRequest.CategoryId;
+        var newCategory = _categoryRepository.FindById(categoryId.Value);
+        if (newCategory == null)
+        {
+            throw new CategoryNotFound(categoryId.Value);
+        }
+        task.Category = newCategory;
+        task.CategoryId = newCategory.Id;   
+    }
+    public Models.Entities.Task? Update(UpdateTaskRequest updateTaskRequest, long id)
+    {
+        var task = _taskRepository.FindById(id);
+        if (task == null) return task;
+        return _taskRepository.Update((task) =>
+        {
+            task.Name = updateTaskRequest.Name;
+            task.Description = updateTaskRequest.Description;
+            UpdateCateogry(updateTaskRequest, task);
+            task.UpdatedAt = DateTime.UtcNow;   
+        }, task);
     }
 }

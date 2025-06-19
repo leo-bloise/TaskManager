@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application;
 using TaskManager.Controllers.DTO;
 using TaskManager.Controllers.DTOs;
+using TaskManager.Controllers.DTOs.Input;
 using TaskManager.Controllers.DTOs.Output;
 using TaskManager.Models.Entities;
 
@@ -37,5 +38,12 @@ public class TasksController : Controller
     {
         var task = _taskService.Create(createTaskRequest);
         return Created($"/tasks/{task.Id}", new ApiResponseData<TaskCreatedResponse>("task created successfully", TaskCreatedResponse.Adapt(task)));
+    }
+    [HttpPut("{id}")]
+    public IActionResult UpdateTask([FromBody] UpdateTaskRequest updateTaskRequest, long id)
+    {
+        var task = _taskService.Update(updateTaskRequest, id);
+        if (task == null) return NotFound(new ApiResponse($"task id {id} not found"));
+        return Ok(new ApiResponseData<TaskCreatedResponse>("task updated", TaskCreatedResponse.Adapt(task)));
     }
 }

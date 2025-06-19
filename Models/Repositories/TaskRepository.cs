@@ -18,6 +18,12 @@ public class TaskRepository : ITaskRepository
         _taskManagerDbContext.SaveChanges();
         return task;
     }
+    public Entities.Task Update(Action<Entities.Task> delegateAction, Entities.Task task)
+    {
+        delegateAction.Invoke(task);
+        _taskManagerDbContext.SaveChanges();
+        return task;
+    }
     public Entities.Task? FindById(long id)
     {
         return _taskManagerDbContext.Tasks.Include(task => task.Category).FirstOrDefault(task => task.Id == id);

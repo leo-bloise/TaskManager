@@ -4,7 +4,9 @@ public record TaskCreatedResponse(
     long Id,
     string Name,
     string Description,
-    CategoryCreatedResponse? Category
+    CategoryCreatedResponse? Category,
+    DateTime CreatedAt,
+    DateTime UpdatedAt
 )
 {
     public static TaskCreatedResponse Adapt(TaskManager.Models.Entities.Task task)
@@ -18,7 +20,9 @@ public record TaskCreatedResponse(
             task.Id,
             task.Name,
             task.Description,
-            categoryCreatedResponse
+            categoryCreatedResponse,
+            task.CreatedAt,
+            task.UpdatedAt
         );
     }
 }
