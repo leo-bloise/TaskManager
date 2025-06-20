@@ -68,4 +68,9 @@ public class TaskRepository : ITaskRepository
             totalPages
         );
     }
+    public void Delete(Entities.Task task)
+    {
+        _taskManagerDbContext.Tasks.Remove(task);
+        _taskManagerDbContext.SaveChanges();
+    }
 }

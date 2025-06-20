@@ -11,4 +11,5 @@ public interface ITaskService
     public Page<Models.Entities.Task> GetPage(int page, int size);
     public Models.Entities.Task? Update(UpdateTaskRequest updateTaskRequest, long id);
     public Models.Entities.Task? Patch(PatchTaskRequest patchTaskRequest, long id);
+    public void Delete(long id);
 }

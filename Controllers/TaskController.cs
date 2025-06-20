@@ -53,4 +53,10 @@ public class TasksController : Controller
         if (task == null) return NotFound(new ApiResponse($"task id {id} not found"));
         return Ok(new ApiResponseData<TaskCreatedResponse>("task updated", TaskCreatedResponse.Adapt(task)));
     }
+    [HttpDelete("{id}")]
+    public IActionResult DeleteTask(long id)
+    {
+        _taskService.Delete(id);
+        return Ok(new ApiResponse($"task id {id} was deleted"));
+    }
 }

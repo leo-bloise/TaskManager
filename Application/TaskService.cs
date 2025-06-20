@@ -97,4 +97,10 @@ public class TaskService : ITaskService
             task.UpdatedAt = DateTime.UtcNow;   
         }, task);
     }
+    public void Delete(long id)
+    {
+        var task = _taskRepository.FindById(id);
+        if (task == null) throw new TaskNotFound(id);
+        _taskRepository.Delete(task);
+    }
 }
