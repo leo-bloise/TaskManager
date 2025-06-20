@@ -68,6 +68,11 @@ public class TaskService : ITaskService
         task.Category = newCategory;
         task.CategoryId = newCategory.Id;   
     }
+    private void UpdateCateogry(PatchTaskRequest patchTaskRequest, Models.Entities.Task task)
+    {
+        if (!patchTaskRequest.CategoryId.HasValue) return;
+        UpdateCateogry(new UpdateTaskRequest(patchTaskRequest.Name ?? "", patchTaskRequest.Description ?? "", patchTaskRequest.CategoryId), task);
+    }
     public Models.Entities.Task? Update(UpdateTaskRequest updateTaskRequest, long id)
     {
         var task = _taskRepository.FindById(id);
@@ -77,6 +82,18 @@ public class TaskService : ITaskService
             task.Name = updateTaskRequest.Name;
             task.Description = updateTaskRequest.Description;
             UpdateCateogry(updateTaskRequest, task);
+            task.UpdatedAt = DateTime.UtcNow;
+        }, task);
+    }
+    public Models.Entities.Task? Patch(PatchTaskRequest patchTaskRequest, long id)
+    {
+        var task = _taskRepository.FindById(id);
+        if (task == null) return task;
+        return _taskRepository.Update((task) =>
+        {
+            task.Name = patchTaskRequest.Name ?? task.Name;
+            task.Description = patchTaskRequest.Description ?? task.Description;
+            UpdateCateogry(patchTaskRequest, task);
             task.UpdatedAt = DateTime.UtcNow;   
         }, task);
     }

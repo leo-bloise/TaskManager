@@ -46,4 +46,11 @@ public class TasksController : Controller
         if (task == null) return NotFound(new ApiResponse($"task id {id} not found"));
         return Ok(new ApiResponseData<TaskCreatedResponse>("task updated", TaskCreatedResponse.Adapt(task)));
     }
+    [HttpPatch("{id}")]
+    public IActionResult PatchTask([FromBody] PatchTaskRequest patchTaskRquest, long id)
+    {
+        var task = _taskService.Patch(patchTaskRquest, id);
+        if (task == null) return NotFound(new ApiResponse($"task id {id} not found"));
+        return Ok(new ApiResponseData<TaskCreatedResponse>("task updated", TaskCreatedResponse.Adapt(task)));
+    }
 }
