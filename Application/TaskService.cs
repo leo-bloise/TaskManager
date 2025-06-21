@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TaskManager.Application.Exceptions;
 using TaskManager.Controllers.DTOs;
 using TaskManager.Controllers.DTOs.Input;
 using TaskManager.Models.Entities;
+using TaskManager.Models.Filters;
 using TaskManager.Models.Repositories;
 
 namespace TaskManager.Application;
@@ -47,10 +47,11 @@ public class TaskService : ITaskService
     {
         return _taskRepository.FindById(id);
     }
-    public Page<Models.Entities.Task> GetPage(int page, int size)
+    public Page<Models.Entities.Task> GetPage(int page, int size, TaskFilter? taskFilter)
     {
         TaskPage taskPage = new TaskPage(new List<Models.Entities.Task>(), page, size, 0, 0);
-        return _taskRepository.GetPage(taskPage);
+        var newTaskPageFiltered = _taskRepository.FilterAndPaginate(TaskFilterPage.Adapt(taskFilter, taskPage));
+        return newTaskPageFiltered.Page;
     }
     private void UpdateCateogry(UpdateTaskRequest updateTaskRequest, Models.Entities.Task task)
     {

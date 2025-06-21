@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Infra;
 using TaskManager.Models.Entities;
+using TaskManager.Models.Filters;
 
 namespace TaskManager.Models.Repositories;
 
@@ -26,12 +27,29 @@ public class TaskRepository : ITaskRepository
     }
     public Entities.Task? FindById(long id)
     {
-        return _taskManagerDbContext.Tasks.Include(task => task.Category).FirstOrDefault(task => task.Id == id);
+        return _taskManagerDbContext.Tasks
+            .Include(task => task.Category)
+            .Select((task) => new Entities.Task()
+            {
+                Id = task.Id,
+                Category = task.Category != null ? new Category()
+                {
+                    Id = task.Category.Id,
+                    CreatedAt = task.Category.CreatedAt,
+                    Name = task.Category.Name,
+                    UpdatedAt = task.Category.UpdatedAt
+                } : null,
+                Name = task.Name,
+                Description = task.Description,
+                CreatedAt = task.CreatedAt,
+                UpdatedAt = task.UpdatedAt
+            })
+            .FirstOrDefault(task => task.Id == id);
     }
-    public Page<Entities.Task> GetPage(Page<Entities.Task> page)
+    private Page<Entities.Task> GetPageFromQuery(IQueryable<Entities.Task> query, Page<Entities.Task> page)
     {
         var skip = (page.PageNumber - 1) * page.PageSize;
-        var count = _taskManagerDbContext.Tasks.Count();
+        var count = query.Count();
         int totalPages = 0;
         if (count % page.PageSize != 0)
         {
@@ -41,7 +59,7 @@ public class TaskRepository : ITaskRepository
         {
             totalPages = count / page.PageSize;
         }
-        List<Entities.Task> data = _taskManagerDbContext.Tasks
+        List<Entities.Task> data = query
             .Include(task => task.Category)
             .OrderBy(task => task.Id)
             .Skip(skip)
@@ -51,7 +69,7 @@ public class TaskRepository : ITaskRepository
                 Id = task.Id,
                 Category = task.Category != null ? new Category()
                 {
-                    Id = task.Category.Id,                    
+                    Id = task.Category.Id,
                     Name = task.Category.Name,
                 } : null,
                 CreatedAt = task.CreatedAt,
@@ -72,5 +90,28 @@ public class TaskRepository : ITaskRepository
     {
         _taskManagerDbContext.Tasks.Remove(task);
         _taskManagerDbContext.SaveChanges();
+    }
+    public TaskFilterPage FilterAndPaginate(TaskFilterPage taskFilterPage)
+    {
+        var query = _taskManagerDbContext.Tasks.AsNoTracking().AsQueryable();
+        if (taskFilterPage.Name != null)
+        {
+            query = query.Where(t => t.Name.ToLower().Contains(taskFilterPage.Name.ToLower()));
+        }
+        if (taskFilterPage.Description != null)
+        {
+            query = query.Where(t => t.Description.ToLower().Contains(taskFilterPage.Description.ToLower()));
+        }
+        if (taskFilterPage.CategoryId.HasValue)
+        {
+            query = query.Where(t => t.Category != null && t.Category.Id == taskFilterPage.CategoryId);
+        }
+        var page = GetPageFromQuery(query, taskFilterPage.Page);
+        return new TaskFilterPage(
+            taskFilterPage.Name,
+            taskFilterPage.Description,
+            taskFilterPage.CategoryId,
+            page
+        );
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application;
 using TaskManager.Controllers.DTO;
@@ -18,9 +19,13 @@ public class TasksController : Controller
         _taskService = taskService;
     }
     [HttpGet]
-    public IActionResult PageTasks([FromQuery] int page = 1, [FromQuery] int size = 10)
+    public IActionResult PageTasks([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] TaskFilter? taskFilter = null)
     {
-        var taskPage = _taskService.GetPage(page, size);
+        if (page < 1)
+        {
+            return new UnprocessableEntityObjectResult(new ApiResponse("0 or negative pages are not allowed"));
+        }
+        var taskPage = _taskService.GetPage(page, size, taskFilter);
         return Ok(new ApiResponseData<Page<TaskCreatedResponse>>("Task page", TaskCreatedPage.Adapt(taskPage)));
     }
     [HttpGet("{id}")]
