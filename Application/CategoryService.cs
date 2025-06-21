@@ -7,10 +7,14 @@ namespace TaskManager.Application;
 
 public class CategoryService : ICategoryService
 {
-    private ICategoryRepository _categoryRepository;
-    public CategoryService(ICategoryRepository categoryRepository)
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly ITaskRepository _taskRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    public CategoryService(ICategoryRepository categoryRepository, ITaskRepository taskRepository, IUnitOfWork unitOfWork)
     {
         _categoryRepository = categoryRepository;
+        _taskRepository = taskRepository;
+        _unitOfWork = unitOfWork;
     }
     public Category Create(CreateCategoryRequest createCategoryRequest)
     {
@@ -25,6 +29,17 @@ public class CategoryService : ICategoryService
         _categoryRepository.Create(category);
         return category;
     }
+
+    public System.Threading.Tasks.Task Delete(long id)
+    {
+        var category = _categoryRepository.FindById(id) ?? throw new CategoryNotFound(id);
+        return _unitOfWork.ExecuteAsync(() =>
+        {
+            _taskRepository.DetachCategoryFromTask(id);
+            _categoryRepository.Delete(category);
+        });
+    }
+
     public Category? FindById(long id)
     {
         return _categoryRepository.FindById(id);

@@ -7,4 +7,5 @@ public interface ICategoryService
 {
     public Category Create(CreateCategoryRequest createCategoryRequest);
     public Category? FindById(long id);
+    public System.Threading.Tasks.Task Delete(long id);
 }

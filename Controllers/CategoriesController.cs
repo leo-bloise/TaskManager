@@ -24,6 +24,12 @@ public class CategoriesController : Controller
         if (category == null) return NotFound(new ApiResponse($"Not found category {id}"));
         return Ok(new ApiResponseData<CategoryCreatedResponse>("category found", CategoryCreatedResponse.Adapt(category)));
     }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(long id)
+    {
+        await _categoryService.Delete(id);
+        return Ok(new ApiResponse($"category {id} deleted"));
+    }
     [HttpPost]
     public IActionResult Create([FromBody] CreateCategoryRequest createCategoryRequest)
     {

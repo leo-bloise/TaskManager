@@ -114,4 +114,11 @@ public class TaskRepository : ITaskRepository
             page
         );
     }
+    public void DetachCategoryFromTask(long categoryId)
+    {
+        _taskManagerDbContext.Database.ExecuteSql(
+            $"UPDATE tasks SET category_id = null WHERE category_id = {categoryId}"
+        );
+        _taskManagerDbContext.SaveChanges();
+    }
 }

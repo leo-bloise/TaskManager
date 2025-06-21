@@ -24,6 +24,7 @@ public class Program
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<ICategoryService, CategoryService>();
         builder.Services.AddScoped<ITaskService, TaskService>();
+        builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
         WebApplication app = builder.Build();
         app.MapControllers();
         app.ConfigureExceptionHandler();

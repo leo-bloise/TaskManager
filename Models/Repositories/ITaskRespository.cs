@@ -29,4 +29,5 @@ public interface ITaskRepository
     </summary>
     */
     public void Delete(Entities.Task task);
+    public void DetachCategoryFromTask(long categoryId);
 }

@@ -16,6 +16,11 @@ public class CategoryRepository : ICategoryRepository
         _taskManagerDbContext.SaveChanges();
         return category;
     }
+    public void Delete(Category category)
+    {
+        _taskManagerDbContext.Categories.Remove(category);
+        _taskManagerDbContext.SaveChanges();
+    }
     public bool ExistsByName(string name)
     {
         return _taskManagerDbContext.Categories.Any(c => c.Name == name);
