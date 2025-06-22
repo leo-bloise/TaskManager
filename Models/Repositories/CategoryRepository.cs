@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TaskManager.Infra;
 using TaskManager.Models.Entities;
 
@@ -27,6 +28,9 @@ public class CategoryRepository : ICategoryRepository
     }
     public Category? FindById(long id, long userId)
     {
-        return _taskManagerDbContext.Categories.FirstOrDefault(c => c.Id == id && c.User.Id == userId);
+        return _taskManagerDbContext
+            .Categories
+            .AsNoTracking()
+            .FirstOrDefault(c => c.Id == id && c.UserId == userId);
     }
 }

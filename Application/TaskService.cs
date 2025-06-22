@@ -27,12 +27,15 @@ public class TaskService : ITaskService
         if (category == null) throw new CategoryDoesNotExistsException(categoryId);
         Models.Entities.Task task = new()
         {
-            Category = category,
+            CategoryId = category.Id,
             Description = createTaskRequest.Description,
             Name = createTaskRequest.Name,
-            User = user
+            UserId = user.Id            
         };
-        return _taskRepository.Create(task);
+        task = _taskRepository.Create(task);
+        task.Category = category;
+        task.User = user;
+        return task;
     }
     public Models.Entities.Task Create(CreateTaskRequest createTaskRequest, long userId)
     {        
@@ -47,7 +50,7 @@ public class TaskService : ITaskService
             Category = null,
             Description = createTaskRequest.Description,
             Name = createTaskRequest.Name,
-            User = user
+            UserId = user.Id
         };
         return _taskRepository.Create(task);
     }
@@ -66,6 +69,7 @@ public class TaskService : ITaskService
         if (!updateTaskRequest.CategoryId.HasValue)
         {
             task.Category = null;
+            task.CategoryId = null;
             return;
         }
         var categoryId = updateTaskRequest.CategoryId;
@@ -91,7 +95,7 @@ public class TaskService : ITaskService
             task.Name = updateTaskRequest.Name;
             task.Description = updateTaskRequest.Description;
             UpdateCateogry(updateTaskRequest, task, userId);
-            task.UpdatedAt = DateTime.UtcNow;
+            task.UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
         }, task);
     }
     public Models.Entities.Task? Patch(PatchTaskRequest patchTaskRequest, long id, long userId)
@@ -103,7 +107,7 @@ public class TaskService : ITaskService
             task.Name = patchTaskRequest.Name ?? task.Name;
             task.Description = patchTaskRequest.Description ?? task.Description;
             UpdateCateogry(patchTaskRequest, task, userId);
-            task.UpdatedAt = DateTime.UtcNow;   
+            task.UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
         }, task);
     }
     public void Delete(long id, long userId)

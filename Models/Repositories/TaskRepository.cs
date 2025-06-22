@@ -22,6 +22,7 @@ public class TaskRepository : ITaskRepository
     public Entities.Task Update(Action<Entities.Task> delegateAction, Entities.Task task)
     {
         delegateAction.Invoke(task);
+        _taskManagerDbContext.Tasks.Update(task);
         _taskManagerDbContext.SaveChanges();
         return task;
     }
@@ -30,6 +31,22 @@ public class TaskRepository : ITaskRepository
         var task = _taskManagerDbContext.Tasks
             .Where(task => task.Id == id && task.User.Id == userId)
             .Include(task => task.Category)
+            .AsNoTracking()
+            .Select((task) => new Entities.Task()
+            {
+                Id = task.Id,
+                Category = task.Category != null ? new Category()
+                {
+                    Id = task.Category.Id,
+                    Name = task.Category.Name,
+                } : null,
+                CreatedAt = task.CreatedAt,
+                Description = task.Description,
+                Name = task.Name,
+                UpdatedAt = task.UpdatedAt,
+                User = task.User,
+                UserId = task.User.Id
+            })
             .FirstOrDefault();
         return task;
     }
@@ -51,6 +68,7 @@ public class TaskRepository : ITaskRepository
             .OrderBy(task => task.Id)
             .Skip(skip)
             .Take(page.PageSize)
+            .AsNoTracking()
             .Select((task) => new Entities.Task()
             {
                 Id = task.Id,
@@ -80,7 +98,7 @@ public class TaskRepository : ITaskRepository
     }
     public TaskFilterPage FilterAndPaginate(TaskFilterPage taskFilterPage, long userId)
     {
-        var query = _taskManagerDbContext.Tasks.AsNoTracking().AsQueryable();
+        var query = _taskManagerDbContext.Tasks.AsQueryable();
         query = query.Where(t => t.User.Id == userId);
         if (taskFilterPage.Name != null)
         {

@@ -29,7 +29,7 @@ public class CategoryService : ICategoryService
         Category category = new Category()
         {
             Name = createCategoryRequest.Name,
-            User = user
+            UserId = user.Id
         };
         _categoryRepository.Create(category);
         return category;

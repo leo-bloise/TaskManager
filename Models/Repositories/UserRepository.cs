@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TaskManager.Infra;
 using TaskManager.Models.Entities;
 
@@ -26,10 +27,10 @@ public class UserRepository : IUserRepository
     }
     public User? FindById(long id)
     {
-        return _taskManagerDbContext.Users.FirstOrDefault(user => user.Id == id);
+        return _taskManagerDbContext.Users.AsNoTracking().FirstOrDefault(u => u.Id == id);
     }
     public User? FindByUsername(string username)
     {
-        return _taskManagerDbContext.Users.FirstOrDefault(u => u.Username == username);
+        return _taskManagerDbContext.Users.AsNoTracking().FirstOrDefault(u => u.Username == username);
     }
 }
