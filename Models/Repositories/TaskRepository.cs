@@ -25,26 +25,13 @@ public class TaskRepository : ITaskRepository
         _taskManagerDbContext.SaveChanges();
         return task;
     }
-    public Entities.Task? FindById(long id)
+    public Entities.Task? FindById(long id, long userId)
     {
-        return _taskManagerDbContext.Tasks
+        var task = _taskManagerDbContext.Tasks
+            .Where(task => task.Id == id && task.User.Id == userId)
             .Include(task => task.Category)
-            .Select((task) => new Entities.Task()
-            {
-                Id = task.Id,
-                Category = task.Category != null ? new Category()
-                {
-                    Id = task.Category.Id,
-                    CreatedAt = task.Category.CreatedAt,
-                    Name = task.Category.Name,
-                    UpdatedAt = task.Category.UpdatedAt
-                } : null,
-                Name = task.Name,
-                Description = task.Description,
-                CreatedAt = task.CreatedAt,
-                UpdatedAt = task.UpdatedAt
-            })
-            .FirstOrDefault(task => task.Id == id);
+            .FirstOrDefault();
+        return task;
     }
     private Page<Entities.Task> GetPageFromQuery(IQueryable<Entities.Task> query, Page<Entities.Task> page)
     {
@@ -91,9 +78,10 @@ public class TaskRepository : ITaskRepository
         _taskManagerDbContext.Tasks.Remove(task);
         _taskManagerDbContext.SaveChanges();
     }
-    public TaskFilterPage FilterAndPaginate(TaskFilterPage taskFilterPage)
+    public TaskFilterPage FilterAndPaginate(TaskFilterPage taskFilterPage, long userId)
     {
         var query = _taskManagerDbContext.Tasks.AsNoTracking().AsQueryable();
+        query = query.Where(t => t.User.Id == userId);
         if (taskFilterPage.Name != null)
         {
             query = query.Where(t => t.Name.ToLower().Contains(taskFilterPage.Name.ToLower()));
@@ -114,10 +102,10 @@ public class TaskRepository : ITaskRepository
             page
         );
     }
-    public void DetachCategoryFromTask(long categoryId)
+    public void DetachCategoryFromTask(long categoryId, long userId)
     {
         _taskManagerDbContext.Database.ExecuteSql(
-            $"UPDATE tasks SET category_id = null WHERE category_id = {categoryId}"
+            $"UPDATE \"tasks\" SET \"category_id\" = null WHERE \"category_id\" = {categoryId} AND \"user_id\" = {userId}"
         );
         _taskManagerDbContext.SaveChanges();
     }

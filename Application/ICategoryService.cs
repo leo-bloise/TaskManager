@@ -5,7 +5,7 @@ namespace TaskManager.Application;
 
 public interface ICategoryService
 {
-    public Category Create(CreateCategoryRequest createCategoryRequest);
-    public Category? FindById(long id);
-    public System.Threading.Tasks.Task Delete(long id);
+    public Category Create(CreateCategoryRequest createCategoryRequest, long userId);
+    public Category? FindById(long id, long userId);
+    public System.Threading.Tasks.Task Delete(long id, long userId);
 }

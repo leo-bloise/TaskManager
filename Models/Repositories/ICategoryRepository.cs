@@ -5,7 +5,7 @@ namespace TaskManager.Models.Repositories;
 public interface ICategoryRepository
 {
     public Category Create(Category category);
-    public Category? FindById(long id);
-    public bool ExistsByName(string name);
+    public Category? FindById(long id, long userId);
+    public bool ExistsByName(string name, long userId);
     public void Delete(Category category);
 }

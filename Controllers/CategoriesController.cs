@@ -20,20 +20,26 @@ public class CategoriesController : Controller
     [HttpGet("{id}")]
     public IActionResult Get(long id)
     {
-        Category? category = _categoryService.FindById(id);
+        var userId = GetIdFromUser();
+        if (!userId.HasValue) return Unauthorized(new ApiResponse("Unauthorized"));
+        Category? category = _categoryService.FindById(id, userId.Value);
         if (category == null) return NotFound(new ApiResponse($"Not found category {id}"));
         return Ok(new ApiResponseData<CategoryCreatedResponse>("category found", CategoryCreatedResponse.Adapt(category)));
     }
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(long id)
     {
-        await _categoryService.Delete(id);
+        var userId = GetIdFromUser();
+        if (!userId.HasValue) return Unauthorized(new ApiResponse("Unauthorized"));
+        await _categoryService.Delete(id, userId.Value);
         return Ok(new ApiResponse($"category {id} deleted"));
     }
     [HttpPost]
     public IActionResult Create([FromBody] CreateCategoryRequest createCategoryRequest)
     {
-        Category category = _categoryService.Create(createCategoryRequest);
+        var userId = GetIdFromUser();
+        if (!userId.HasValue) return Unauthorized(new ApiResponse("Unauthorized"));
+        Category category = _categoryService.Create(createCategoryRequest, userId.Value);
         return Created($"/categories/{category.Id}", new ApiResponseData<CategoryCreatedResponse>("category created successfully", 
         CategoryCreatedResponse.Adapt(category)));
     }

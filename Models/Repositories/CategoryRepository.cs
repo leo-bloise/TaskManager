@@ -21,12 +21,12 @@ public class CategoryRepository : ICategoryRepository
         _taskManagerDbContext.Categories.Remove(category);
         _taskManagerDbContext.SaveChanges();
     }
-    public bool ExistsByName(string name)
+    public bool ExistsByName(string name, long userId)
     {
-        return _taskManagerDbContext.Categories.Any(c => c.Name == name);
+        return _taskManagerDbContext.Categories.Any(c => c.Name == name && c.User.Id == userId);
     }
-    public Category? FindById(long id)
+    public Category? FindById(long id, long userId)
     {
-        return _taskManagerDbContext.Categories.FirstOrDefault(c => c.Id == id);
+        return _taskManagerDbContext.Categories.FirstOrDefault(c => c.Id == id && c.User.Id == userId);
     }
 }

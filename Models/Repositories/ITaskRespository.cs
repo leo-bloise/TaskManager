@@ -15,8 +15,8 @@ public interface ITaskRepository
     Returns the task with its category (the category is loaded without the children tasks)
     </summary>
     */
-    public Entities.Task? FindById(long id);
-    public TaskFilterPage FilterAndPaginate(TaskFilterPage taskFilterPage);
+    public Entities.Task? FindById(long id, long userId);
+    public TaskFilterPage FilterAndPaginate(TaskFilterPage taskFilterPage, long userId);
     /**
     <summary>
     Updates an existing task
@@ -29,5 +29,5 @@ public interface ITaskRepository
     </summary>
     */
     public void Delete(Entities.Task task);
-    public void DetachCategoryFromTask(long categoryId);
+    public void DetachCategoryFromTask(long categoryId, long userId);
 }
