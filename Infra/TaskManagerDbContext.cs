@@ -23,5 +23,8 @@ public class TaskManagerDbContext : DbContext
                     .HasColumnType("timestamp without time zone");
             }
         }
+        modelBuilder.Entity<Category>()
+            .HasIndex(c => new { c.Name, c.UserId })
+            .IsUnique();
     }
 }

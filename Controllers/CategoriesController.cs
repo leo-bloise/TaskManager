@@ -43,4 +43,12 @@ public class CategoriesController : Controller
         return Created($"/categories/{category.Id}", new ApiResponseData<CategoryCreatedResponse>("category created successfully", 
         CategoryCreatedResponse.Adapt(category)));
     }
+    [HttpGet]
+    public IActionResult Paginate([FromQuery] int page = 1, [FromQuery] int size = 10)
+    {
+        var userId = GetIdFromUser();
+        if (!userId.HasValue) return Unauthorized(new ApiResponse("Unauthorized"));
+        var categoryPage = _categoryService.Page(page, size, userId.Value);
+        return Ok(new ApiResponseData<Page<CategoryCreatedResponse>>($"category page {page}", CategoryCreatedPage.Adapt(categoryPage)));
+    }
 }
