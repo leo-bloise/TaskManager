@@ -9,14 +9,16 @@ namespace TaskManager.Application;
 
 public class TaskService : ITaskService
 {
-    private ITaskRepository _taskRepository;
-    private ICategoryRepository _categoryRepository;
-    private IUserService _userService;
-    public TaskService(ITaskRepository taskRepository, ICategoryRepository categoryRepository, IUserService userService)
+    private readonly ITaskRepository _taskRepository;
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IUserService _userService;
+    private readonly ICacheManager _cacheManager;
+    public TaskService(ITaskRepository taskRepository, ICategoryRepository categoryRepository, IUserService userService, ICacheManager cacheManager)
     {
         _taskRepository = taskRepository;
         _categoryRepository = categoryRepository;
         _userService = userService;
+        _cacheManager = cacheManager;
     }
     private Models.Entities.Task CreateWithCategory(CreateTaskRequest createTaskRequest, long userId)
     {
@@ -35,6 +37,7 @@ public class TaskService : ITaskService
         task = _taskRepository.Create(task);
         task.Category = category;
         task.User = user;
+        _cacheManager.RemoveAllRelated($"task_page_{userId}");
         return task;
     }
     public Models.Entities.Task Create(CreateTaskRequest createTaskRequest, long userId)
@@ -52,6 +55,7 @@ public class TaskService : ITaskService
             Name = createTaskRequest.Name,
             UserId = user.Id
         };
+        _cacheManager.RemoveAllRelated($"task_page_{userId}");
         return _taskRepository.Create(task);
     }
     public Models.Entities.Task? Get(long id, long userId)
@@ -60,8 +64,15 @@ public class TaskService : ITaskService
     }
     public Page<Models.Entities.Task> GetPage(int page, int size, TaskFilter? taskFilter, long userId)
     {
+        var key = $"task_page_{userId}_{page}_{size}_${taskFilter?.ToCacheKey() ?? "null"}";
+        var cachedTaskFilterPage = _cacheManager.Get<TaskFilterPage>(key);
+        if(cachedTaskFilterPage != null)
+        {
+            return cachedTaskFilterPage.Page;
+        }
         TaskPage taskPage = new TaskPage(new List<Models.Entities.Task>(), page, size, 0, 0);
         var newTaskPageFiltered = _taskRepository.FilterAndPaginate(TaskFilterPage.Adapt(taskFilter, taskPage), userId);
+        _cacheManager.Set(key, newTaskPageFiltered);
         return newTaskPageFiltered.Page;
     }
     private void UpdateCateogry(UpdateTaskRequest updateTaskRequest, Models.Entities.Task task, long userId)
@@ -96,6 +107,7 @@ public class TaskService : ITaskService
             task.Description = updateTaskRequest.Description;
             UpdateCateogry(updateTaskRequest, task, userId);
             task.UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+            _cacheManager.RemoveAllRelated($"task_page_{userId}");
         }, task);
     }
     public Models.Entities.Task? Patch(PatchTaskRequest patchTaskRequest, long id, long userId)
@@ -108,6 +120,7 @@ public class TaskService : ITaskService
             task.Description = patchTaskRequest.Description ?? task.Description;
             UpdateCateogry(patchTaskRequest, task, userId);
             task.UpdatedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+            _cacheManager.RemoveAllRelated($"task_page_{userId}");
         }, task);
     }
     public void Delete(long id, long userId)
@@ -115,5 +128,6 @@ public class TaskService : ITaskService
         var task = _taskRepository.FindById(id, userId);
         if (task == null) throw new TaskNotFound(id);
         _taskRepository.Delete(task);
+        _cacheManager.RemoveAllRelated($"task_page_{userId}");
     }
 }

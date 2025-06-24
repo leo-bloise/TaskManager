@@ -11,6 +11,7 @@ public class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
         builder.ConfigureDatabase();
+        builder.ConfigureCacheManager();
         builder.Services.AddControllers(options =>
         {
             options.Filters.Add<ModelStateInvalidFilter>();

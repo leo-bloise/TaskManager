@@ -6,5 +6,8 @@ public record TaskFilter(
     int? CategoryId
 )
 {
-    
+    public string ToCacheKey()
+    {
+        return $"{Name}_{Description}_{CategoryId}";
+    }   
 }
